@@ -6,6 +6,9 @@ import InfiniteCalendar from 'react-infinite-calendar';
 import 'react-infinite-calendar/styles.css';
 import moment from 'moment';
 import {fetch} from './lib/HolidayApi';
+import {formatDate} from './lib/utils';
+
+
 
 class App extends Component {
     state = {
@@ -15,15 +18,20 @@ class App extends Component {
         max: '',
         number_days: '',
         country_code: '',
-        submitted: false
+        submitted: false,
     };
 
     componentDidMount() {
         fetch({
             year: 2017,
-            country: 'US'
+            country: 'US',
         }).then(response => {
-            console.log("Response", response);
+            // Because I am only interested on the date, I can iterate
+            // through each object's key and convert them into a Date's object
+            // Format received: {2017-02-01: {date, name, observed}}
+            const holidays = Object.keys(response.data.holidays).map(formatDate);
+
+            console.log('Holiday formatted', holidays);
         });
     }
 
@@ -34,10 +42,10 @@ class App extends Component {
 
         this.setState({
             submitted: true,
-            end_date: end_date,
+            end_date,
             min: new Date(this.state.begin_date),
-            max: new Date(end_date)
-        })
+            max: new Date(end_date),
+        });
     };
 
     update = () => {
