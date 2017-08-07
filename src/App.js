@@ -9,6 +9,9 @@ import moment from 'moment';
 class App extends Component {
     state = {
         begin_date: '',
+        end_date: '',
+        min: '',
+        max: '',
         number_days: '',
         country_code: '',
         submitted: false
@@ -17,8 +20,13 @@ class App extends Component {
     handleSubmit = (event) => {
         event.preventDefault();
 
+        const end_date = moment(this.state.begin_date).add(this.state.number_days, 'day');
+
         this.setState({
-            submitted: true
+            submitted: true,
+            end_date: end_date,
+            min: new Date(this.state.begin_date),
+            max: new Date(end_date)
         })
     };
 
@@ -66,6 +74,10 @@ class App extends Component {
                         height={600}
                         selected={this.state.begin_date}
                         disabledDays={[0, 6]} // Disable weekends
+                        minDate={this.state.min}
+                        min={this.state.min}
+                        max={this.state.max}
+                        maxDate={this.state.max}
                     />,
                 </section>}
             </div>

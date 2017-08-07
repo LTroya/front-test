@@ -27,6 +27,12 @@ form > div {
   display: inline-block;
 }
 
+.App .Cal__Container__root {
+  display: block;
+  margin: auto;
+  margin-top: 20px;
+}
+
 .error {
   color: red;
 }
