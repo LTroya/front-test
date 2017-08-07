@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import './App.css';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import InfiniteCalendar from 'react-infinite-calendar';
+import 'react-infinite-calendar/styles.css';
 import moment from 'moment';
 
 class App extends Component {
@@ -9,12 +11,15 @@ class App extends Component {
         begin_date: '',
         number_days: '',
         country_code: '',
+        submitted: false
     };
 
     handleSubmit = (event) => {
         event.preventDefault();
 
-        console.log("Submitting the form");
+        this.setState({
+            submitted: true
+        })
     };
 
     update = () => {
@@ -54,6 +59,15 @@ class App extends Component {
 
                     <button>Submit</button>
                 </form>
+
+                {this.state.submitted && <section>
+                    <InfiniteCalendar
+                        width={400}
+                        height={600}
+                        selected={this.state.begin_date}
+                        disabledDays={[0, 6]} // Disable weekends
+                    />,
+                </section>}
             </div>
         );
     }
