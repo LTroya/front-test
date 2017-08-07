@@ -5,6 +5,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import InfiniteCalendar from 'react-infinite-calendar';
 import 'react-infinite-calendar/styles.css';
 import moment from 'moment';
+import {fetch} from './lib/HolidayApi';
 
 class App extends Component {
     state = {
@@ -16,6 +17,15 @@ class App extends Component {
         country_code: '',
         submitted: false
     };
+
+    componentDidMount() {
+        fetch({
+            year: 2017,
+            country: 'US'
+        }).then(response => {
+            console.log("Response", response);
+        });
+    }
 
     handleSubmit = (event) => {
         event.preventDefault();

@@ -1,0 +1,1 @@
+export const HOLIDAY_API_KEY = '917d36c0-66b6-49e2-b356-520d51392e63';
