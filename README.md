@@ -1,4 +1,4 @@
-** HOw to run the project **
+**How to run the project**
 
 - `git clone https://github.com/LTroya/front_coding_test.git`
 - `cd front_coding_test`
