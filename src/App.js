@@ -5,10 +5,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 import InfiniteCalendar from 'react-infinite-calendar';
 import 'react-infinite-calendar/styles.css';
 import moment from 'moment';
-import {fetch} from './lib/HolidayApi';
+import {holiday} from './lib/HolidayApi';
 import {formatDate} from './lib/utils';
-
-
 
 class App extends Component {
     state = {
@@ -19,33 +17,6 @@ class App extends Component {
         number_days: '',
         country_code: '',
         submitted: false,
-    };
-
-    componentDidMount() {
-        fetch({
-            year: 2017,
-            country: 'US',
-        }).then(response => {
-            // Because I am only interested on the date, I can iterate
-            // through each object's key and convert them into a Date's object
-            // Format received: {2017-02-01: {date, name, observed}}
-            const holidays = Object.keys(response.data.holidays).map(formatDate);
-
-            console.log('Holiday formatted', holidays);
-        });
-    }
-
-    handleSubmit = (event) => {
-        event.preventDefault();
-
-        const end_date = moment(this.state.begin_date).add(this.state.number_days, 'day');
-
-        this.setState({
-            submitted: true,
-            end_date,
-            min: new Date(this.state.begin_date),
-            max: new Date(end_date),
-        });
     };
 
     update = () => {
@@ -61,10 +32,68 @@ class App extends Component {
         });
     };
 
+    handleSubmit = (event) => {
+        event.preventDefault();
+
+        this.setState({
+            error: '',
+            message: 'Fetching holidays',
+            end_date: moment(this.state.begin_date).add(this.state.number_days, 'day')
+        });
+
+        this.fetchHolidays();
+    };
+
+    handleEmptySubmit = (event) => {
+        event.preventDefault();
+
+        this.setState({
+            error: 'Please fill the form correctly before continue',
+        });
+    };
+
+    someFieldMissing = () => {
+        return !this.state.begin_date
+            || !this.state.number_days
+            || !this.state.country_code;
+    };
+
+    fetchHolidays() {
+        const params = {
+            year: this.state.begin_date.get('year'),
+            country: this.state.country_code,
+        };
+
+        holiday.fetch(params).then(response => {
+            // Because I am only interested on the date, I can iterate
+            // through each object's key and convert them into a Date's object
+            // Format received: {2017-02-01: {date, name, observed}}
+            const holidays = Object.keys(response.data.holidays).map(formatDate);
+
+            this.setState({
+                message: '',
+                disabled_dates: holidays,
+                max: new Date(this.state.end_date),
+                min: new Date(this.state.begin_date),
+                submitted: true,
+            });
+        }).catch(err => {
+            this.setState({
+                error: 'Error fetching holidays, please try again!',
+                message: ''
+            })
+        });
+    }
+
     render() {
+        const handleSubmit = this.someFieldMissing() ? this.handleEmptySubmit : this.handleSubmit;
+
         return (
             <div className="App">
-                <form onSubmit={this.handleSubmit}>
+                {this.state.error && <p className="error">{this.state.error}</p>}
+                {this.state.message && <p className="info">{this.state.message}</p>}
+
+                <form onSubmit={handleSubmit}>
                     <DatePicker
                         dateFormat="DD/MM/YYYY"
                         placeholder="Start date"
@@ -96,6 +125,7 @@ class App extends Component {
                         min={this.state.min}
                         max={this.state.max}
                         maxDate={this.state.max}
+                        disabledDates={this.state.disabled_dates}
                     />,
                 </section>}
             </div>
