@@ -12,6 +12,7 @@ class App extends Component {
     state = {
         begin_date: '',
         end_date: '',
+        disabled_dates: [],
         min: '',
         max: '',
         number_days: '',
