@@ -5,3 +5,7 @@
 - `npm install` or `yarn install`
 - `npm run start` or `yarn start`
 
+Or
+
+- Visit `https://ltroya.github.io/front-test` to see the demo
+
