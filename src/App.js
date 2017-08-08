@@ -5,14 +5,16 @@ import 'react-datepicker/dist/react-datepicker.css';
 import InfiniteCalendar from 'react-infinite-calendar';
 import 'react-infinite-calendar/styles.css';
 import moment from 'moment';
-import {holiday} from './lib/HolidayApi';
-import {formatDate} from './lib/utils';
+import {holidayApi} from './lib/HolidayApi';
+import {formatDate, holidaysToArray} from './lib/utils';
+import {Holidays} from './components/Holidays';
 
 class App extends Component {
     state = {
         begin_date: '',
         end_date: '',
         disabled_dates: [],
+        holidays: '',
         min: '',
         max: '',
         number_days: '',
@@ -65,15 +67,18 @@ class App extends Component {
             country: this.state.country_code,
         };
 
-        holiday.fetch(params).then(response => {
+        holidayApi.fetch(params).then(response => {
             // Because I am only interested on the date, I can iterate
             // through each object's key and convert them into a Date's object
             // Format received: {2017-02-01: {date, name, observed}}
-            const holidays = Object.keys(response.data.holidays).map(formatDate);
+            const disabled_dates = Object.keys(response.data.holidays).map(formatDate);
+
+            const holidays = holidaysToArray(response.data.holidays);
 
             this.setState({
                 message: '',
-                disabled_dates: holidays,
+                holidays,
+                disabled_dates,
                 max: new Date(this.state.end_date),
                 min: new Date(this.state.begin_date),
                 submitted: true,
@@ -81,7 +86,8 @@ class App extends Component {
         }).catch(err => {
             this.setState({
                 error: 'Error fetching holidays, please try again!',
-                message: ''
+                message: '',
+                holidays: ''
             })
         });
     }
@@ -97,7 +103,7 @@ class App extends Component {
                 <form onSubmit={handleSubmit}>
                     <DatePicker
                         dateFormat="DD/MM/YYYY"
-                        placeholder="Start date"
+                        placeholderText="Start date"
                         selected={this.state.begin_date}
                         onChange={this.updateDate}/>
 
@@ -129,6 +135,8 @@ class App extends Component {
                         disabledDates={this.state.disabled_dates}
                     />,
                 </section>}
+
+                {this.state.holidays && <Holidays holidays={this.state.holidays} />}
             </div>
         );
     }
