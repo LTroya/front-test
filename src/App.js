@@ -41,7 +41,7 @@ class App extends Component {
         this.setState({
             error: '',
             message: 'Fetching holidays',
-            end_date: moment(this.state.begin_date).add(this.state.number_days, 'day')
+            end_date: moment(this.state.begin_date).add(this.state.number_days, 'day'),
         });
 
         this.fetchHolidays();
@@ -87,8 +87,8 @@ class App extends Component {
             this.setState({
                 error: 'Error fetching holidays, please try again!',
                 message: '',
-                holidays: ''
-            })
+                holidays: '',
+            });
         });
     }
 
@@ -122,7 +122,12 @@ class App extends Component {
                     <button>Submit</button>
                 </form>
 
-                {this.state.submitted && <section>
+
+                {this.state.holidays && <section>
+                    <h4>Holiday List</h4><Holidays style={styles} holidays={this.state.holidays}/>
+                </section>}
+
+                {this.state.submitted && <section style={styles}>
                     <InfiniteCalendar
                         width={400}
                         height={600}
@@ -133,13 +138,16 @@ class App extends Component {
                         max={this.state.max}
                         maxDate={this.state.max}
                         disabledDates={this.state.disabled_dates}
-                    />,
+                    />
                 </section>}
 
-                {this.state.holidays && <Holidays holidays={this.state.holidays} />}
             </div>
         );
     }
 }
+
+const styles = {
+    display: 'inline-block',
+};
 
 export default App;
